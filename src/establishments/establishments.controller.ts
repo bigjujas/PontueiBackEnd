@@ -68,7 +68,7 @@ export class EstablishmentsController {
   }
 
   @Get('my-store')
-  @UseGuards(JwtAuthGuard, OwnerGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get my establishment' })
   @ApiResponse({ status: 200, description: 'Establishment retrieved successfully' })
