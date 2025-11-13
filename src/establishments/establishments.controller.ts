@@ -88,7 +88,8 @@ export class EstablishmentsController {
   @ApiResponse({ status: 200, description: 'Returns { hasEstablishment: boolean }' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async checkOwnership(@Request() req) {
-    return this.establishmentsService.checkOwnership(req.user.sub);
+    // Solução simples: usar o campo is_establishment_owner do próprio user
+    return { hasEstablishment: !!req.user.is_establishment_owner };
   }
 
   @Get('my-store')

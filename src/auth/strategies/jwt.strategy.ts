@@ -25,6 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         email: true,
         name: true,
         points_balance: true,
+        is_establishment_owner: true,
       },
     });
 
@@ -33,11 +34,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     return {
-      sub: payload.sub, // Usar o sub original do JWT payload
+      sub: payload.sub,
       id: client.id,
       email: client.email,
       name: client.name,
       points_balance: client.points_balance,
+      is_establishment_owner: client.is_establishment_owner,
     };
   }
 }
