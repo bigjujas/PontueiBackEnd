@@ -209,6 +209,23 @@ export class EstablishmentsService {
   }
 
   // Product CRUD operations
+  async getMyProducts(clientId: string) {
+    const establishment = await this.prisma.establishment.findUnique({
+      where: { owner_client_id: clientId },
+    });
+
+    if (!establishment) {
+      throw new NotFoundException('You do not own any establishment');
+    }
+
+    return this.prisma.product.findMany({
+      where: { establishment_id: establishment.id },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+  }
+
   async createProduct(clientId: string, createProductDto: CreateProductDto) {
     const establishment = await this.prisma.establishment.findUnique({
       where: { owner_client_id: clientId },

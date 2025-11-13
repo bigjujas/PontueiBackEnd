@@ -93,10 +93,10 @@ export class CreateProductDto {
   @IsString()
   price: string;
 
-  @ApiProperty({ example: 'Pratos Principais', required: false })
+  @ApiProperty({ example: 'https://exemplo.com/foto.jpg', required: false })
   @IsOptional()
   @IsString()
-  category?: string;
+  photo_url?: string;
 }
 
 export class UpdateProductDto {
@@ -115,10 +115,10 @@ export class UpdateProductDto {
   @IsString()
   price?: string;
 
-  @ApiProperty({ example: 'Pratos Principais', required: false })
+  @ApiProperty({ example: 'https://exemplo.com/foto.jpg', required: false })
   @IsOptional()
   @IsString()
-  category?: string;
+  photo_url?: string;
 
   @ApiProperty({ example: true, required: false })
   @IsOptional()
