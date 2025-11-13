@@ -44,29 +44,6 @@ export class EstablishmentsController {
     return this.establishmentsService.findAll(category, search);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get establishment by ID' })
-  @ApiResponse({ status: 200, description: 'Establishment retrieved successfully' })
-  @ApiResponse({ status: 404, description: 'Establishment not found' })
-  async findOne(@Param('id') id: string) {
-    return this.establishmentsService.findOne(id);
-  }
-
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create new establishment' })
-  @ApiResponse({ status: 201, description: 'Establishment created successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 409, description: 'User already owns an establishment' })
-  async create(
-    @Request() req,
-    @Body() createEstablishmentDto: CreateEstablishmentDto,
-  ) {
-    return this.establishmentsService.create(req.user.sub, createEstablishmentDto);
-  }
-
   @Get('debug-user')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -88,8 +65,30 @@ export class EstablishmentsController {
   @ApiResponse({ status: 200, description: 'Returns { hasEstablishment: boolean }' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async checkOwnership(@Request() req) {
-    // Solução simples: usar o campo is_establishment_owner do próprio user
-    return { hasEstablishment: !!req.user.is_establishment_owner };
+    return this.establishmentsService.checkOwnership(req.user.sub);
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create new establishment' })
+  @ApiResponse({ status: 201, description: 'Establishment created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 409, description: 'User already owns an establishment' })
+  async create(
+    @Request() req,
+    @Body() createEstablishmentDto: CreateEstablishmentDto,
+  ) {
+    return this.establishmentsService.create(req.user.sub, createEstablishmentDto);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get establishment by ID' })
+  @ApiResponse({ status: 200, description: 'Establishment retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Establishment not found' })
+  async findOne(@Param('id') id: string) {
+    return this.establishmentsService.findOne(id);
   }
 
   @Get('my-store')
