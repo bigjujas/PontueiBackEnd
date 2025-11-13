@@ -1,10 +1,40 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateEstablishmentDto, UpdateEstablishmentDto, CreateProductDto, UpdateProductDto } from './dto/establishment.dto';
 
 @Injectable()
 export class EstablishmentsService {
   constructor(private prisma: PrismaService) {}
+
+  async create(clientId: string, createEstablishmentDto: CreateEstablishmentDto) {
+    // Check if user already owns an establishment
+    const existingEstablishment = await this.prisma.establishment.findUnique({
+      where: { owner_client_id: clientId },
+    });
+
+    if (existingEstablishment) {
+      throw new ConflictException('You already own an establishment');
+    }
+
+    // Create establishment and update client to be owner
+    const result = await this.prisma.$transaction(async (prisma) => {
+      const establishment = await prisma.establishment.create({
+        data: {
+          ...createEstablishmentDto,
+          owner_client_id: clientId,
+        },
+      });
+
+      await prisma.client.update({
+        where: { id: clientId },
+        data: { is_establishment_owner: true },
+      });
+
+      return establishment;
+    });
+
+    return result;
+  }
 
   async findAll(category?: string, search?: string) {
     const where: any = {};

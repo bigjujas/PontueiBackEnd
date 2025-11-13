@@ -52,6 +52,21 @@ export class EstablishmentsController {
     return this.establishmentsService.findOne(id);
   }
 
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create new establishment' })
+  @ApiResponse({ status: 201, description: 'Establishment created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 409, description: 'User already owns an establishment' })
+  async create(
+    @Request() req,
+    @Body() createEstablishmentDto: CreateEstablishmentDto,
+  ) {
+    return this.establishmentsService.create(req.user.sub, createEstablishmentDto);
+  }
+
   @Get('my-store')
   @UseGuards(JwtAuthGuard, OwnerGuard)
   @ApiBearerAuth()
@@ -60,7 +75,7 @@ export class EstablishmentsController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Establishment not found' })
   async findMyStore(@Request() req) {
-    return this.establishmentsService.findMyStore(req.user.id);
+    return this.establishmentsService.findMyStore(req.user.sub);
   }
 
   @Put('my-store')
@@ -74,7 +89,7 @@ export class EstablishmentsController {
     @Request() req,
     @Body() updateEstablishmentDto: UpdateEstablishmentDto,
   ) {
-    return this.establishmentsService.updateMyStore(req.user.id, updateEstablishmentDto);
+    return this.establishmentsService.updateMyStore(req.user.sub, updateEstablishmentDto);
   }
 
   // Product CRUD endpoints
@@ -89,7 +104,7 @@ export class EstablishmentsController {
     @Request() req,
     @Body() createProductDto: CreateProductDto,
   ) {
-    return this.establishmentsService.createProduct(req.user.id, createProductDto);
+    return this.establishmentsService.createProduct(req.user.sub, createProductDto);
   }
 
   @Put('my-store/products/:productId')
@@ -104,7 +119,7 @@ export class EstablishmentsController {
     @Param('productId') productId: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    return this.establishmentsService.updateProduct(req.user.id, productId, updateProductDto);
+    return this.establishmentsService.updateProduct(req.user.sub, productId, updateProductDto);
   }
 
   @Delete('my-store/products/:productId')
@@ -118,6 +133,6 @@ export class EstablishmentsController {
     @Request() req,
     @Param('productId') productId: string,
   ) {
-    return this.establishmentsService.deleteProduct(req.user.id, productId);
+    return this.establishmentsService.deleteProduct(req.user.sub, productId);
   }
 }
