@@ -11,6 +11,13 @@ export class EstablishmentsService {
       console.log('Checking ownership for clientId:', clientId);
       console.log('ClientId type:', typeof clientId);
       
+      // Validar se o clientId é um UUID válido
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(clientId)) {
+        console.log('Invalid clientId format:', clientId);
+        return { hasEstablishment: false };
+      }
+      
       const establishment = await this.prisma.establishment.findUnique({
         where: { owner_client_id: clientId },
         select: { id: true, name: true, owner_client_id: true }
