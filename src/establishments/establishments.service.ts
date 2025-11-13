@@ -6,6 +6,20 @@ import { CreateEstablishmentDto, UpdateEstablishmentDto, CreateProductDto, Updat
 export class EstablishmentsService {
   constructor(private prisma: PrismaService) {}
 
+  async checkOwnership(clientId: string) {
+    try {
+      const establishment = await this.prisma.establishment.findUnique({
+        where: { owner_client_id: clientId },
+        select: { id: true }
+      });
+      
+      return { hasEstablishment: !!establishment };
+    } catch (error) {
+      console.error('Error checking ownership:', error);
+      return { hasEstablishment: false };
+    }
+  }
+
   async create(clientId: string, createEstablishmentDto: CreateEstablishmentDto) {
     // Check if user already owns an establishment
     const existingEstablishment = await this.prisma.establishment.findUnique({

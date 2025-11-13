@@ -74,12 +74,7 @@ export class EstablishmentsController {
   @ApiResponse({ status: 200, description: 'Returns { hasEstablishment: boolean }' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async checkOwnership(@Request() req) {
-    try {
-      await this.establishmentsService.findMyStore(req.user.sub);
-      return { hasEstablishment: true };
-    } catch (error) {
-      return { hasEstablishment: false };
-    }
+    return this.establishmentsService.checkOwnership(req.user.sub);
   }
 
   @Get('my-store')
