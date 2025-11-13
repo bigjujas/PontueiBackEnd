@@ -67,6 +67,21 @@ export class EstablishmentsController {
     return this.establishmentsService.create(req.user.sub, createEstablishmentDto);
   }
 
+  @Get('check-ownership')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Check if user owns an establishment' })
+  @ApiResponse({ status: 200, description: 'Returns { hasEstablishment: boolean }' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async checkOwnership(@Request() req) {
+    try {
+      await this.establishmentsService.findMyStore(req.user.sub);
+      return { hasEstablishment: true };
+    } catch (error) {
+      return { hasEstablishment: false };
+    }
+  }
+
   @Get('my-store')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

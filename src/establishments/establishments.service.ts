@@ -110,26 +110,34 @@ export class EstablishmentsService {
   }
 
   async findMyStore(clientId: string) {
-    const establishment = await this.prisma.establishment.findUnique({
-      where: { owner_client_id: clientId },
-    });
+    try {
+      const establishment = await this.prisma.establishment.findUnique({
+        where: { owner_client_id: clientId },
+      });
 
-    if (!establishment) {
+      if (!establishment) {
+        throw new NotFoundException('You do not own any establishment');
+      }
+
+      // Get products for this establishment
+      const products = await this.prisma.product.findMany({
+        where: { establishment_id: establishment.id },
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      return {
+        ...establishment,
+        products,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error('Error in findMyStore:', error);
       throw new NotFoundException('You do not own any establishment');
     }
-
-    // Get products for this establishment
-    const products = await this.prisma.product.findMany({
-      where: { establishment_id: establishment.id },
-      orderBy: {
-        created_at: 'desc',
-      },
-    });
-
-    return {
-      ...establishment,
-      products,
-    };
   }
 
   async updateMyStore(clientId: string, updateEstablishmentDto: UpdateEstablishmentDto) {

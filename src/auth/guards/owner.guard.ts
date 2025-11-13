@@ -17,7 +17,7 @@ export class OwnerGuard implements CanActivate {
     // Check if user owns an establishment
     const establishment = await this.prisma.establishment.findFirst({
       where: {
-        owner_client_id: user.id,
+        owner_client_id: user.sub || user.id,
       },
     });
 
