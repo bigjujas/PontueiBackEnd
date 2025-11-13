@@ -67,6 +67,20 @@ export class EstablishmentsController {
     return this.establishmentsService.create(req.user.sub, createEstablishmentDto);
   }
 
+  @Get('debug-user')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Debug user info' })
+  async debugUser(@Request() req) {
+    return {
+      user: req.user,
+      sub: req.user.sub,
+      id: req.user.id,
+      subType: typeof req.user.sub,
+      idType: typeof req.user.id
+    };
+  }
+
   @Get('check-ownership')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

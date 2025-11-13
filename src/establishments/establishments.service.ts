@@ -8,14 +8,24 @@ export class EstablishmentsService {
 
   async checkOwnership(clientId: string) {
     try {
+      console.log('Checking ownership for clientId:', clientId);
+      console.log('ClientId type:', typeof clientId);
+      
       const establishment = await this.prisma.establishment.findUnique({
         where: { owner_client_id: clientId },
-        select: { id: true }
+        select: { id: true, name: true, owner_client_id: true }
       });
+      
+      console.log('Found establishment:', establishment);
       
       return { hasEstablishment: !!establishment };
     } catch (error) {
       console.error('Error checking ownership:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        meta: error.meta
+      });
       return { hasEstablishment: false };
     }
   }
