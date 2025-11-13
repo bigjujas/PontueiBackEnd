@@ -33,8 +33,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     return {
-      ...client,
-      sub: client.id, // Adicionar sub para compatibilidade
+      sub: payload.sub, // Usar o sub original do JWT payload
+      id: client.id,
+      email: client.email,
+      name: client.name,
+      points_balance: client.points_balance,
     };
   }
 }
