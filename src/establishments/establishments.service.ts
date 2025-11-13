@@ -25,7 +25,10 @@ export class EstablishmentsService {
       
       console.log('Found establishment:', establishment);
       
-      return { hasEstablishment: !!establishment };
+      return { 
+        hasEstablishment: !!establishment,
+        establishmentName: establishment?.name || null
+      };
     } catch (error) {
       console.error('Error checking ownership:', error);
       console.error('Error details:', {
