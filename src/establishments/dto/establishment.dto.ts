@@ -73,6 +73,16 @@ export class UpdateEstablishmentDto {
   @IsString({ each: true })
   photos?: string[];
 
+  @ApiProperty({ example: 'https://exemplo.com/logo.jpg', required: false })
+  @IsOptional()
+  @IsString()
+  logo_url?: string;
+
+  @ApiProperty({ example: 'https://exemplo.com/banner.jpg', required: false })
+  @IsOptional()
+  @IsString()
+  cover_url?: string;
+
   @ApiProperty({ example: true, required: false })
   @IsOptional()
   @IsBoolean()
@@ -92,6 +102,10 @@ export class CreateProductDto {
   @ApiProperty({ example: 25.50 })
   @IsString()
   price: string;
+
+  @ApiProperty({ example: 250, required: false })
+  @IsOptional()
+  points_price?: number;
 
   @ApiProperty({ example: 'https://exemplo.com/foto.jpg', required: false })
   @IsOptional()
@@ -114,6 +128,10 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   price?: string;
+
+  @ApiProperty({ example: 300, required: false })
+  @IsOptional()
+  points_price?: number;
 
   @ApiProperty({ example: 'https://exemplo.com/foto.jpg', required: false })
   @IsOptional()
