@@ -73,4 +73,49 @@ export class ClientsService {
 
     return updatedClient;
   }
+
+  async getEstablishmentPoints(clientId: string, establishmentId: string) {
+    // Buscar transações de pontos para este cliente e estabelecimento
+    const transactions = await this.prisma.pointsTransaction.findMany({
+      where: {
+        client_id: clientId,
+        order: {
+          establishment_id: establishmentId,
+        },
+      },
+    });
+
+    // Calcular saldo de pontos para este estabelecimento
+    const totalPoints = transactions.reduce((sum, transaction) => {
+      return transaction.type === 'gain' ? sum + transaction.points : sum - transaction.points;
+    }, 0);
+
+    return {
+      clientId,
+      establishmentId,
+      points: Math.max(0, totalPoints), // Não permitir pontos negativos
+    };
+  }
+
+  async getPointsFromOrders(clientId: string, establishmentId: string) {
+    // Buscar todos os pedidos do cliente neste estabelecimento
+    const orders = await this.prisma.order.findMany({
+      where: {
+        client_id: clientId,
+        establishment_id: establishmentId,
+      },
+    });
+
+    // Somar todos os pontos gerados pelos pedidos
+    const totalPoints = orders.reduce((sum, order) => {
+      return sum + (order.points_generated || 0);
+    }, 0);
+
+    return {
+      clientId,
+      establishmentId,
+      points: totalPoints,
+      ordersCount: orders.length,
+    };
+  }
 }

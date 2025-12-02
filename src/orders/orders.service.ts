@@ -49,7 +49,7 @@ export class OrdersService {
       });
     }
 
-    const pointsGenerated = Math.floor(totalAmount / 10); // 1 point per R$10
+    const pointsGenerated = Math.floor(totalAmount * 10); // 1 point per 10 centavos
 
     // Create order with items in a transaction
     return this.prisma.$transaction(async (tx) => {
@@ -97,12 +97,19 @@ export class OrdersService {
   }
 
   async findMyOrders(clientId: string) {
-    const orders = await this.prisma.order.findMany({
-      where: { client_id: clientId },
-      orderBy: {
-        created_at: 'desc',
-      },
-    });
+    
+    let orders = [];
+    try {
+      orders = await this.prisma.order.findMany({
+        where: { client_id: clientId },
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+    } catch (error) {
+      console.log('Erro ao buscar pedidos, retornando array vazio:', error);
+      return [];
+    }
 
     // Get order items and payments for each order
     const ordersWithDetails = await Promise.all(
@@ -327,4 +334,6 @@ export class OrdersService {
       return updatedOrder;
     });
   }
+
+
 }

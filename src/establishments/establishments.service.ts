@@ -149,6 +149,47 @@ export class EstablishmentsService {
     };
   }
 
+  async getEstablishmentProducts(id: string) {
+    // Validar se o ID é um UUID válido
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      throw new NotFoundException('Invalid establishment ID format');
+    }
+
+    // Verificar se o estabelecimento existe
+    const establishment = await this.prisma.establishment.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    if (!establishment) {
+      throw new NotFoundException('Establishment not found');
+    }
+
+    // Buscar produtos ativos do estabelecimento
+    return this.prisma.product.findMany({
+      where: { 
+        establishment_id: id,
+        is_active: true 
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        points_price: true,
+        photo_url: true,
+        is_active: true,
+        created_at: true,
+        updated_at: true,
+        establishment_id: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+  }
+
   async findMyStore(clientId: string) {
     try {
       const establishment = await this.prisma.establishment.findUnique({

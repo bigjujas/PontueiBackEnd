@@ -57,13 +57,15 @@ export class AuthService {
       },
     });
 
-    // Generate JWT
+    // Generate JWT token for new user
     const payload = { sub: client.id, email: client.email };
-    const token = this.jwtService.sign(payload);
+    const access_token = this.jwtService.sign(payload);
 
     return {
+      success: true,
+      access_token,
       client,
-      access_token: token,
+      message: 'Cadastro realizado com sucesso'
     };
   }
 
@@ -76,21 +78,23 @@ export class AuthService {
     });
 
     if (!client) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Email ou senha inválidos');
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, client.password_hash);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Email ou senha inválidos');
     }
 
-    // Generate JWT
+    // Generate JWT token
     const payload = { sub: client.id, email: client.email };
-    const token = this.jwtService.sign(payload);
+    const access_token = this.jwtService.sign(payload);
 
     return {
+      success: true,
+      access_token,
       client: {
         id: client.id,
         name: client.name,
@@ -100,7 +104,7 @@ export class AuthService {
         points_balance: client.points_balance,
         created_at: client.created_at,
       },
-      access_token: token,
+      message: 'Login realizado com sucesso'
     };
   }
 

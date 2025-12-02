@@ -116,6 +116,14 @@ export class EstablishmentsController {
     return this.establishmentsService.findOne(id);
   }
 
+  @Get(':id/products')
+  @ApiOperation({ summary: 'Get products from establishment by ID' })
+  @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Establishment not found' })
+  async getEstablishmentProducts(@Param('id') id: string) {
+    return this.establishmentsService.getEstablishmentProducts(id);
+  }
+
   // Product CRUD endpoints
   @Get('my-store/products')
   @UseGuards(JwtAuthGuard, OwnerGuard)
