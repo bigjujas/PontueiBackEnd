@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, UseGuards, Request, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ClientsService } from './clients.service';
 import { UpdateClientDto } from '../auth/dto/auth.dto';
@@ -6,8 +6,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Clients')
 @Controller('clients')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
@@ -28,5 +26,27 @@ export class ClientsController {
   @ApiResponse({ status: 409, description: 'Email already exists' })
   async updateMe(@Request() req, @Body() updateClientDto: UpdateClientDto) {
     return this.clientsService.updateMe(req.user.id, updateClientDto);
+  }
+
+  @Get('points/:clientId/:establishmentId')
+  @ApiOperation({ summary: 'Get client points for specific establishment' })
+  @ApiResponse({ status: 200, description: 'Points retrieved successfully' })
+  async getEstablishmentPoints(
+    @Param('clientId') clientId: string,
+    @Param('establishmentId') establishmentId: string,
+  ) {
+    return this.clientsService.getEstablishmentPoints(clientId, establishmentId);
+  }
+
+  @Get('points-from-orders/:clientId/:establishmentId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get client points from orders for specific establishment' })
+  @ApiResponse({ status: 200, description: 'Points calculated from orders' })
+  async getPointsFromOrders(
+    @Param('clientId') clientId: string,
+    @Param('establishmentId') establishmentId: string,
+  ) {
+    return this.clientsService.getPointsFromOrders(clientId, establishmentId);
   }
 }

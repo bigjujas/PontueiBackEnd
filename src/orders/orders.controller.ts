@@ -34,7 +34,6 @@ export class OrdersController {
   @ApiOperation({ summary: 'Create a new order' })
   @ApiResponse({ status: 201, description: 'Order created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid order data' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Establishment or products not found' })
   async createOrder(@Request() req, @Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.createOrder(req.user.id, createOrderDto);
@@ -45,7 +44,6 @@ export class OrdersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get my orders' })
   @ApiResponse({ status: 200, description: 'Orders retrieved successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findMyOrders(@Request() req) {
     return this.ordersService.findMyOrders(req.user.id);
   }
