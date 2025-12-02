@@ -49,4 +49,15 @@ export class ClientsController {
   ) {
     return this.clientsService.getPointsFromOrders(clientId, establishmentId);
   }
+
+  @Get('all-points/:clientId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all client points grouped by establishment' })
+  @ApiResponse({ status: 200, description: 'All points by establishment' })
+  async getAllUserPoints(
+    @Param('clientId') clientId: string,
+  ) {
+    return this.clientsService.getAllUserPoints(clientId);
+  }
 }

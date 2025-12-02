@@ -59,7 +59,7 @@ export class AuthService {
 
     // Generate JWT token for new user
     const payload = { sub: client.id, email: client.email };
-    const access_token = this.jwtService.sign(payload);
+    const access_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
     return {
       success: true,
@@ -90,7 +90,7 @@ export class AuthService {
 
     // Generate JWT token
     const payload = { sub: client.id, email: client.email };
-    const access_token = this.jwtService.sign(payload);
+    const access_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
     return {
       success: true,

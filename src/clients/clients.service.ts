@@ -118,4 +118,41 @@ export class ClientsService {
       ordersCount: orders.length,
     };
   }
+
+  async getAllUserPoints(clientId: string) {
+    // Buscar todos os pedidos do cliente agrupados por estabelecimento
+    const orders = await this.prisma.order.findMany({
+      where: {
+        client_id: clientId,
+      },
+      include: {
+        establishment: {
+          select: {
+            id: true,
+            name: true,
+            logo_url: true,
+          },
+        },
+      },
+    });
+
+    // Agrupar por estabelecimento e somar pontos
+    const pointsByEstablishment = orders.reduce((acc, order) => {
+      const estId = order.establishment_id;
+      if (!acc[estId]) {
+        acc[estId] = {
+          establishment: order.establishment,
+          points: 0,
+          ordersCount: 0,
+        };
+      }
+      acc[estId].points += order.points_generated || 0;
+      acc[estId].ordersCount += 1;
+      return acc;
+    }, {} as Record<string, any>);
+
+    // Converter para array e ordenar por pontos
+    return Object.values(pointsByEstablishment)
+      .sort((a: any, b: any) => b.points - a.points);
+  }
 }
