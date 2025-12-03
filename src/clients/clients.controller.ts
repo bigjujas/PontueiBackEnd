@@ -60,4 +60,13 @@ export class ClientsController {
   ) {
     return this.clientsService.getAllUserPoints(clientId);
   }
+
+  @Get('establishment-ranking/:establishmentId')
+  @ApiOperation({ summary: 'Get establishment user ranking' })
+  @ApiResponse({ status: 200, description: 'User ranking for establishment' })
+  async getEstablishmentRanking(
+    @Param('establishmentId') establishmentId: string,
+  ) {
+    return this.clientsService.getEstablishmentRanking(establishmentId);
+  }
 }

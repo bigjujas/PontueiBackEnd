@@ -155,4 +155,41 @@ export class ClientsService {
     return Object.values(pointsByEstablishment)
       .sort((a: any, b: any) => b.points - a.points);
   }
+
+  async getEstablishmentRanking(establishmentId: string) {
+    // Buscar todos os pedidos do estabelecimento agrupados por cliente
+    const orders = await this.prisma.order.findMany({
+      where: {
+        establishment_id: establishmentId,
+      },
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    // Agrupar por cliente e somar pontos
+    const pointsByClient = orders.reduce((acc, order) => {
+      const clientId = order.client_id;
+      if (!acc[clientId]) {
+        acc[clientId] = {
+          client: order.client,
+          points: 0,
+          ordersCount: 0,
+        };
+      }
+      acc[clientId].points += order.points_generated || 0;
+      acc[clientId].ordersCount += 1;
+      return acc;
+    }, {} as Record<string, any>);
+
+    // Converter para array e ordenar por pontos
+    return Object.values(pointsByClient)
+      .sort((a: any, b: any) => b.points - a.points)
+      .slice(0, 10); // Top 10
+  }
 }
